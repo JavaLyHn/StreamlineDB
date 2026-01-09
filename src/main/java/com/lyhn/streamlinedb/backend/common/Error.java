@@ -6,7 +6,8 @@ public class Error {
     public static final FailCreateFile failCreateFile = new FailCreateFile();
     public static final NoFilePermission  noFilePermission = new NoFilePermission();
     public static final NoFileExist noFileExist = new NoFileExist();
-    public static final BadLogFileException BadLogFileException = new BadLogFileException();
+    public static final BadLogFileException badLogFileException = new BadLogFileException();
+    public static final BadXIDFileException badXIDFileException = new BadXIDFileException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -35,6 +36,12 @@ public class Error {
 
     public static class BadLogFileException extends RuntimeException {
         public BadLogFileException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class BadXIDFileException extends RuntimeException {
+        public BadXIDFileException() {
             super("Bad log file");
         }
     }
