@@ -70,7 +70,7 @@ public class LoggerTest {
 
     @Test
     public void test3_readLog() throws Exception {
-        System.out.println("测试3: 读取日志11");
+        System.out.println("测试3: 读取日志");
 
         Logger logger = Logger.open(LOG_PATH);
 
