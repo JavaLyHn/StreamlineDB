@@ -42,7 +42,10 @@ public class PageX {
         setFSO(pg.getData(),(short)(offset + raw.length));
         return offset;
     }
-
+    // 获取页面的空闲空间大小
+    public static int getFreeSpace(Page pg) {
+        return PageCache.PAGE_SIZE - (int)getFSO(pg.getData());
+    }
     // 将raw插入pg中的offset位置，并将pg.data的offset设置为较大的offset
     public static void recoverInsert(Page pg,byte[] raw,short offset) {
         pg.setDirty(true);
