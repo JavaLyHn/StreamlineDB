@@ -43,7 +43,7 @@ public abstract class AbstractCache<T> {
                 lock.unlock();
                 return obj;
             }
-            if(maxResource > 0 && count >= maxResource){
+            if(maxResource > 0 && count == maxResource){
                 lock.unlock();
                 // 超出最大缓存数量
                 throw new Error.CacheFullException();
@@ -68,7 +68,7 @@ public abstract class AbstractCache<T> {
 
         lock.lock();
         references.put(key,1);
-        getting.put(key,true);
+        getting.remove(key);
         cache.put(key,obj);
         lock.unlock();
         return obj;
