@@ -8,6 +8,8 @@ public class Error {
     public static final NoFileExist noFileExist = new NoFileExist();
     public static final BadLogFileException badLogFileException = new BadLogFileException();
     public static final BadXIDFileException badXIDFileException = new BadXIDFileException();
+    public static final DataTooLargeException dataTooLargeException = new DataTooLargeException();
+    public static final DatabaseBusyException databaseBusyException = new DatabaseBusyException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -42,6 +44,18 @@ public class Error {
 
     public static class BadXIDFileException extends RuntimeException {
         public BadXIDFileException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class DataTooLargeException extends RuntimeException {
+        public DataTooLargeException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class DatabaseBusyException extends RuntimeException {
+        public DatabaseBusyException() {
             super("Bad log file");
         }
     }

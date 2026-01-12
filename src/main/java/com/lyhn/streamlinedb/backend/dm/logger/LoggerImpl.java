@@ -54,7 +54,7 @@ public class LoggerImpl implements Logger{
             Panic.panic(e);
         }
         if(size < 4){
-            Panic.panic(Error.BadLogFileException);
+            Panic.panic(Error.badLogFileException);
         }
 
         ByteBuffer raw = ByteBuffer.allocate(4);
@@ -82,7 +82,7 @@ public class LoggerImpl implements Logger{
             xCheck = calChecksum(xCheck, log);
         }
         if(xCheck != xCheckSum){
-            Panic.panic(Error.BadLogFileException);
+            Panic.panic(Error.badLogFileException);
         }
         try {
             truncate(position);
