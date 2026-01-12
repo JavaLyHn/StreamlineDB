@@ -10,6 +10,9 @@ public class Error {
     public static final BadXIDFileException badXIDFileException = new BadXIDFileException();
     public static final DataTooLargeException dataTooLargeException = new DataTooLargeException();
     public static final DatabaseBusyException databaseBusyException = new DatabaseBusyException();
+    public static final DeadlockException deadlockException = new DeadlockException();
+    public static final NullEntryException nullEntryException = new NullEntryException();
+    public static final ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -56,6 +59,24 @@ public class Error {
 
     public static class DatabaseBusyException extends RuntimeException {
         public DatabaseBusyException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class DeadlockException extends RuntimeException {
+        public DeadlockException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class NullEntryException extends RuntimeException {
+        public NullEntryException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class ConcurrentUpdateException extends RuntimeException {
+        public ConcurrentUpdateException() {
             super("Bad log file");
         }
     }
