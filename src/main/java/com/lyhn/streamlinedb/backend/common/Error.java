@@ -13,6 +13,8 @@ public class Error {
     public static final DeadlockException deadlockException = new DeadlockException();
     public static final NullEntryException nullEntryException = new NullEntryException();
     public static final ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException();
+    public static final InvalidCommandException invalidCommandException = new InvalidCommandException();
+    public static final TableNoIndexException tableNoIndexException = new TableNoIndexException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -77,6 +79,18 @@ public class Error {
 
     public static class ConcurrentUpdateException extends RuntimeException {
         public ConcurrentUpdateException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class InvalidCommandException extends RuntimeException {
+        public InvalidCommandException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class TableNoIndexException extends RuntimeException {
+        public TableNoIndexException() {
             super("Bad log file");
         }
     }
