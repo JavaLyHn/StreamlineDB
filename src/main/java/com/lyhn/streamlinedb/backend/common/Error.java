@@ -15,6 +15,11 @@ public class Error {
     public static final ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException();
     public static final InvalidCommandException invalidCommandException = new InvalidCommandException();
     public static final TableNoIndexException tableNoIndexException = new TableNoIndexException();
+    public static final InvalidFieldException invalidFieldException = new InvalidFieldException();
+    public static final FieldNotFoundException fieldNotFoundException = new FieldNotFoundException();
+    public static final InvalidLogOpException invalidLogOpException = new InvalidLogOpException();
+    public static final InvalidValuesException invalidValuesException = new InvalidValuesException();
+    public static final FieldNotIndexedException fieldNotIndexedException = new FieldNotIndexedException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -91,6 +96,36 @@ public class Error {
 
     public static class TableNoIndexException extends RuntimeException {
         public TableNoIndexException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class InvalidFieldException extends RuntimeException {
+        public InvalidFieldException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class FieldNotFoundException extends RuntimeException {
+        public FieldNotFoundException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class InvalidLogOpException extends RuntimeException {
+        public InvalidLogOpException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class InvalidValuesException extends RuntimeException {
+        public InvalidValuesException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class FieldNotIndexedException extends RuntimeException {
+        public FieldNotIndexedException() {
             super("Bad log file");
         }
     }
