@@ -3,3 +3,6 @@ StreamlineDB是一个模拟MySQL的轻量级关系型数据库，采用C/S架构
 
 
 仍在完善中！！！！！！！
+
+
+# StreamlineDB使用方法
