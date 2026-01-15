@@ -97,12 +97,13 @@ public class TableManagerImpl implements TableManager{
             }
             // 获取当前事务创建的表
             List<Table> t = xidTableCache.get(xid);
-            // 如果当前事务没有创建任何表，直接返回空字符串
-            if(t == null) {
-                return "\n".getBytes();
+            if(t != null) {
+                for (Table tb : t) {
+                    sb.append(tb.toString()).append("\n");
+                }
             }
-            for (Table tb : t) {
-                sb.append(tb.toString()).append("\n");
+            if(sb.length() == 0) {
+                return "\n".getBytes();
             }
             return sb.toString().getBytes();
         } finally {
