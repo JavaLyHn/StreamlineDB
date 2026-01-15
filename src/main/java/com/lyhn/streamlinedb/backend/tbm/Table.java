@@ -70,7 +70,7 @@ public class Table {
         return tb.persistSelf(xid);
     }
 
-    private Table persistSelf(long xid) {
+    private Table persistSelf(long xid) throws Exception {
         // 将表名转换为字节数组
         byte[] nameRaw = Parser.string2Byte(name);
         // 将下一个表的uid转换为字节数组

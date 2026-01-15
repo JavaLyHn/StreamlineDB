@@ -20,6 +20,8 @@ public class Error {
     public static final InvalidLogOpException invalidLogOpException = new InvalidLogOpException();
     public static final InvalidValuesException invalidValuesException = new InvalidValuesException();
     public static final FieldNotIndexedException fieldNotIndexedException = new FieldNotIndexedException();
+    public static final DuplicatedTableException duplicatedTableException = new DuplicatedTableException();
+    public static final TableNotFoundException tableNotFoundException = new TableNotFoundException();
 
 
     public static class CacheFullException extends RuntimeException {
@@ -126,6 +128,18 @@ public class Error {
 
     public static class FieldNotIndexedException extends RuntimeException {
         public FieldNotIndexedException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class DuplicatedTableException extends RuntimeException {
+        public DuplicatedTableException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class TableNotFoundException extends RuntimeException {
+        public TableNotFoundException() {
             super("Bad log file");
         }
     }
