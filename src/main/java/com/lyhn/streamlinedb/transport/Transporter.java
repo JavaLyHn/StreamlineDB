@@ -15,7 +15,7 @@ public class Transporter {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    public Transporter(Socket socket) throws Exception{
+    public Transporter(Socket socket) throws IOException{
         this.socket = socket;
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.writer = new BufferedWriter(new java.io.OutputStreamWriter(socket.getOutputStream()));

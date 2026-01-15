@@ -22,7 +22,9 @@ public class Error {
     public static final FieldNotIndexedException fieldNotIndexedException = new FieldNotIndexedException();
     public static final DuplicatedTableException duplicatedTableException = new DuplicatedTableException();
     public static final TableNotFoundException tableNotFoundException = new TableNotFoundException();
-
+    public static final InvalidMemException invalidMemException = new InvalidMemException();
+    public static final NestedTransactionException nestedTransactionException = new NestedTransactionException();
+    public static final NoTransactionException noTransactionException = new NoTransactionException();
 
     public static class CacheFullException extends RuntimeException {
         public CacheFullException() {
@@ -143,4 +145,23 @@ public class Error {
             super("Bad log file");
         }
     }
+
+    public static class InvalidMemException extends RuntimeException {
+        public InvalidMemException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class NestedTransactionException extends RuntimeException {
+        public NestedTransactionException() {
+            super("Bad log file");
+        }
+    }
+
+    public static class NoTransactionException extends RuntimeException {
+        public NoTransactionException() {
+            super("Bad log file");
+        }
+    }
+
 }
