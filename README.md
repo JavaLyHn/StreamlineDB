@@ -109,7 +109,7 @@ select * from students where id = 7
 ```
 <img width="496" height="156" alt="image" src="https://github.com/user-attachments/assets/f5b82909-ef85-4bd4-9913-5271528200d0" />
 
-9、删除表**TODO**
+9、删除表
 ```
 drop table students
 ```
