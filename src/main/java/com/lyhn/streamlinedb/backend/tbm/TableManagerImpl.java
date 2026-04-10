@@ -37,14 +37,66 @@ public class TableManagerImpl implements TableManager{
 
     // 加载所有已存在的表
     private void loadTables() {
-        // 获取第一个表的uid
         long uid = firstTableUid();
+        long prevUid = 0;
         while(uid != 0) {
-            // 循环加载所有表并加入缓存
-            Table tb = Table.loadTable(this, uid);
-            uid = tb.nextUid;
-            tableCache.put(tb.name, tb);
+            try {
+                Table tb = Table.loadTable(this, uid);
+                prevUid = uid;
+                uid = tb.nextUid;
+                tableCache.put(tb.name, tb);
+            } catch(Exception e) {
+                System.err.println("[Warning] Failed to load table (uid=" + uid + "), skipping: " + e.getMessage());
+                Table broken = new Table(this, uid);
+                if(broken.parseSelfSafe(uid)) {
+                    prevUid = uid;
+                    uid = broken.nextUid;
+                } else {
+                    if(prevUid != 0) {
+                        skipToNextTable(prevUid, uid);
+                    } else {
+                        updateFirstTableUid(0);
+                        break;
+                    }
+                    uid = getNextUidFromCache(prevUid);
+                    if(uid == 0) break;
+                }
+            }
         }
+    }
+
+    private void skipToNextTable(long prevUid, long badUid) {
+        for(Table tb : tableCache.values()) {
+            if(tb.uid == prevUid) {
+                long next = findNextValidUid(badUid);
+                tb.nextUid = next;
+                break;
+            }
+        }
+    }
+
+    private long findNextValidUid(long startUid) {
+        long uid = startUid;
+        for(int i = 0; i < 100 && uid != 0; i++) {
+            try {
+                Table probe = Table.loadTable(this, uid);
+                return probe.nextUid;
+            } catch(Exception e) {
+                Table p = new Table(this, uid);
+                if(p.parseSelfSafe(uid)) {
+                    return p.nextUid;
+                }
+                uid++;
+            }
+        }
+        return 0;
+    }
+
+    private long getNextUidFromCache(long prevUid) {
+        for(Table tb : tableCache.values()) {
+            if(tb.uid == prevUid) return tb.nextUid;
+        }
+        return 0;
     }
 
     private long firstTableUid() {

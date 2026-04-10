@@ -52,6 +52,27 @@ public class Table {
         return this;
     }
 
+    boolean parseSelfSafe(long uid) {
+        byte[] raw = null;
+        try {
+            raw = ((TableManagerImpl)tbm).vm.read(TransactionManagerImpl.SUPER_XID, uid);
+        } catch (Exception e) { return false; }
+        if(raw == null || raw.length < 12) return false;
+        try {
+            ParseStringRes res = Parser.parseString(raw);
+            int pos = res.next;
+            nextUid = Parser.parseLong(Arrays.copyOfRange(raw, pos, pos+8));
+            return true;
+        } catch(Exception e) {
+            try {
+                nextUid = Parser.parseLong(Arrays.copyOfRange(raw, 4, 12));
+                return true;
+            } catch(Exception e2) {
+                return false;
+            }
+        }
+    }
+
     public static Table createTable(TableManager tbm, long nextUid, long xid, Create create) throws Exception {
         Table tb = new Table(tbm, create.tableName, nextUid);
         for(int i = 0; i < create.fieldName.length; i ++) {
