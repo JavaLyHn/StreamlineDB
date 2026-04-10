@@ -18,6 +18,7 @@ public interface TableManager {
     byte[] read(long xid, Select select) throws Exception;
     byte[] update(long xid, Update update) throws Exception;
     byte[] delete(long xid, Delete delete) throws Exception;
+    byte[] drop(long xid, Drop drop) throws Exception;
 
     public static TableManager create(String path, VersionManager vm, DataManager dm) {
         Booter booter = Booter.create(path);

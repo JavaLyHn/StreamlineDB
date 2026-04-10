@@ -79,6 +79,8 @@ public class Executor {
                 res = tbm.insert(xid, (Insert)stat);
             } else if(Delete.class.isInstance(stat)) {
                 res = tbm.delete(xid, (Delete)stat);
+            } else if(Drop.class.isInstance(stat)) {
+                res = tbm.drop(xid, (Drop)stat);
             } else if(Update.class.isInstance(stat)) {
                 res = tbm.update(xid, (Update)stat);
             }

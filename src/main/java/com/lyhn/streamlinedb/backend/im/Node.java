@@ -102,6 +102,15 @@ public class Node {
         }
     }
 
+    static void shiftRawForDelete(SubArray raw, int kth) {
+        int noKeys = getRawNoKeys(raw);
+        int begin = raw.start+NODE_HEADER_SIZE+kth*(8*2);
+        int end = raw.start+NODE_HEADER_SIZE+(noKeys-1)*(8*2)+(8*2)-1;
+        for(int i = begin; i < end; i ++) {
+            raw.raw[i] = raw.raw[i+(8*2)];
+        }
+    }
+
     // 创建新的根节点（分裂时使用）
     static byte[] newRootRaw(long left, long right, long key)  {
         SubArray raw = new SubArray(new byte[NODE_SIZE], 0, NODE_SIZE);
@@ -313,7 +322,6 @@ public class Node {
 
     // 分裂操作
     private SplitRes split() throws Exception {
-        // 创建新节点
         SubArray nodeRaw = new SubArray(new byte[NODE_SIZE], 0, NODE_SIZE);
         setRawIsLeaf(nodeRaw, getRawIfLeaf(raw));
         setRawNoKeys(nodeRaw, BALANCE_NUMBER);
@@ -327,6 +335,21 @@ public class Node {
         res.newSon = son;
         res.newKey = getRawKthKey(nodeRaw, 0);
         return res;
+    }
+
+    public boolean delete(long key) {
+        int noKeys = getRawNoKeys(raw);
+        int kth = 0;
+        while(kth < noKeys) {
+            long ik = getRawKthKey(raw, kth);
+            if(ik == key) break;
+            if(ik > key) return false;
+            kth ++;
+        }
+        if(kth == noKeys) return false;
+        shiftRawForDelete(raw, kth);
+        setRawNoKeys(raw, noKeys-1);
+        return true;
     }
 
     @Override

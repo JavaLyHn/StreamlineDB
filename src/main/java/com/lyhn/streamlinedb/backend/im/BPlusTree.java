@@ -130,9 +130,32 @@ public class BPlusTree {
         long rootUid = rootUid();
         InsertRes res = insert(rootUid, uid, key);
         assert res != null;
-        // 如果根节点分裂，更新根节点
         if(res.newNode != 0) {
             updateRootUid(rootUid, res.newNode, res.newKey);
+        }
+    }
+
+    public void delete(long key) throws Exception {
+        long rootUid = rootUid();
+        deleteLeaf(rootUid, key);
+    }
+
+    private void deleteLeaf(long nodeUid, long key) throws Exception {
+        Node node = Node.loadNode(this, nodeUid);
+        boolean isLeaf = node.isLeaf();
+        node.release();
+        if(isLeaf) {
+            node = Node.loadNode(this, nodeUid);
+            node.dataItem.before();
+            try {
+                node.delete(key);
+            } finally {
+                node.dataItem.after(TransactionManagerImpl.SUPER_XID);
+            }
+            node.release();
+        } else {
+            long next = searchNext(nodeUid, key);
+            deleteLeaf(next, key);
         }
     }
 

@@ -101,11 +101,28 @@ public class Table {
         List<Long> uids = parseWhere(delete.where);
         int count = 0;
         for (Long uid : uids) {
+            byte[] raw = ((TableManagerImpl)tbm).vm.read(xid, uid);
+            if(raw == null) continue;
+            Map<String, Object> entry = parseEntry(raw);
             if(((TableManagerImpl)tbm).vm.delete(xid, uid)) {
                 count ++;
+                for (Field field : fields) {
+                    if(field.isIndexed()) {
+                        ((TableManagerImpl)tbm).addPendingIndexDelete(xid, name, field.fieldName, entry.get(field.fieldName));
+                    }
+                }
             }
         }
         return count;
+    }
+
+    void executeIndexDelete(String fieldName, Object keyValue) throws Exception {
+        for (Field field : fields) {
+            if(field.fieldName.equals(fieldName) && field.isIndexed()) {
+                field.delete(keyValue);
+                return;
+            }
+        }
     }
     public int update(long xid, Update update) throws Exception {
         // 解析where条件，获取符合条件的uid列表

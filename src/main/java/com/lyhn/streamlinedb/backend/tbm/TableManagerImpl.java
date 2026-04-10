@@ -17,14 +17,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TableManagerImpl implements TableManager{
     VersionManager vm;
     DataManager dm;
-    // 引导器，存储元数据信息
     private Booter booter;
-    // 表名到表对象的缓存
     private Map<String, Table> tableCache;
-    // 事务id到表列表的缓存，记录每个事务创建了哪些表
     private Map<Long, List<Table>> xidTableCache;
-    // 全局锁，保护表缓存
     private Lock lock;
+
+    private Map<Long, List<PendingIndexDelete>> pendingIndexDeletes;
 
     TableManagerImpl(VersionManager vm, DataManager dm, Booter booter) {
         this.vm = vm;
@@ -32,6 +30,7 @@ public class TableManagerImpl implements TableManager{
         this.booter = booter;
         this.tableCache = new HashMap<>();
         this.xidTableCache = new HashMap<>();
+        this.pendingIndexDeletes = new HashMap<>();
         lock = new ReentrantLock();
         loadTables();
     }
@@ -71,17 +70,17 @@ public class TableManagerImpl implements TableManager{
         return res;
     }
 
-    // 提交事务
     @Override
     public byte[] commit(long xid) throws Exception {
         vm.commit(xid);
+        executePendingIndexDeletes(xid);
         return "commit".getBytes();
     }
 
-    // 中止事务
     @Override
     public byte[] abort(long xid) {
         vm.abort(xid);
+        pendingIndexDeletes.remove(xid);
         return "abort".getBytes();
     }
 
@@ -188,5 +187,86 @@ public class TableManagerImpl implements TableManager{
         }
         int count = table.delete(xid, delete);
         return ("delete " + count).getBytes();
+    }
+
+    @Override
+    public byte[] drop(long xid, Drop drop) throws Exception {
+        lock.lock();
+        try {
+            Table table = tableCache.get(drop.tableName);
+            if(table == null) {
+                throw Error.tableNotFoundException;
+            }
+            long firstUid = firstTableUid();
+            if(firstUid == table.uid) {
+                updateFirstTableUid(table.nextUid);
+            } else {
+                long prevUid = findPrevTableUid(firstUid, table.uid);
+                if(prevUid != 0) {
+                    updateNextUid(prevUid, table.nextUid);
+                }
+            }
+            tableCache.remove(drop.tableName);
+            return ("drop " + drop.tableName).getBytes();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private long findPrevTableUid(long startUid, long targetUid) {
+        long uid = startUid;
+        while(uid != 0) {
+            Table tb = getTableByUid(uid);
+            if(tb == null) return 0;
+            if(tb.nextUid == targetUid) {
+                return uid;
+            }
+            uid = tb.nextUid;
+        }
+        return 0;
+    }
+
+    private Table getTableByUid(long uid) {
+        for(Table tb : tableCache.values()) {
+            if(tb.uid == uid) return tb;
+        }
+        return null;
+    }
+
+    private void updateNextUid(long tableUid, long newNextUid) {
+        for(Table tb : tableCache.values()) {
+            if(tb.uid == tableUid) {
+                tb.nextUid = newNextUid;
+                break;
+            }
+        }
+    }
+
+    void addPendingIndexDelete(long xid, String tableName, String fieldName, Object keyValue) {
+        pendingIndexDeletes.computeIfAbsent(xid, k -> new ArrayList<>())
+                .add(new PendingIndexDelete(tableName, fieldName, keyValue));
+    }
+
+    private void executePendingIndexDeletes(long xid) throws Exception {
+        List<PendingIndexDelete> pending = pendingIndexDeletes.remove(xid);
+        if(pending == null) return;
+        for(PendingIndexDelete pid : pending) {
+            Table tb = tableCache.get(pid.tableName);
+            if(tb != null) {
+                tb.executeIndexDelete(pid.fieldName, pid.keyValue);
+            }
+        }
+    }
+
+    static class PendingIndexDelete {
+        String tableName;
+        String fieldName;
+        Object keyValue;
+
+        PendingIndexDelete(String tableName, String fieldName, Object keyValue) {
+            this.tableName = tableName;
+            this.fieldName = fieldName;
+            this.keyValue = keyValue;
+        }
     }
 }

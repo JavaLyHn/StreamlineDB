@@ -125,6 +125,11 @@ public class Field {
         bt.insert(uKey, uid);
     }
 
+    public void delete(Object key) throws Exception {
+        long uKey = value2Uid(key);
+        bt.delete(uKey);
+    }
+
     public List<Long> search(long left, long right) throws Exception {
         return bt.searchRange(left, right);
     }
